@@ -39,30 +39,12 @@ body {
   line-height: 1.5;
 }
 
-/* 모바일에서 메인 콘텐츠 숨기기 및 메시지 표시 */
+/* 모바일에서 조건부 렌더링 - JavaScript가 처리 */
 @media screen and (max-width: 768px) {
-  .mobile-message {
-    display: flex !important;
-  }
-  
-  .hero,
-  .section,
-  .footer {
-    display: none !important;
-  }
-  
-  /* 모바일에서 모든 비디오 완전히 숨기기 및 비활성화 */
-  video {
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-  }
-  
-  /* 모바일에서 비디오 컨테이너도 숨기기 */
-  .columns,
-  .column {
-    display: none !important;
+  /* 기본적으로는 JavaScript가 모든 것을 처리하지만, 
+     혹시 모를 경우를 대비한 백업 스타일 */
+  body {
+    overflow-x: hidden;
   }
 }
 
