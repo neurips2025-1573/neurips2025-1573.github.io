@@ -1,33 +1,84 @@
 window.HELP_IMPROVE_VIDEOJS = false;
 
-// 모바일 디바이스 감지 및 비디오 제어 함수
+// 모바일 디바이스 감지
 function isMobileDevice() {
     return window.innerWidth <= 768;
 }
 
-function controlVideosForMobile() {
-    const videos = document.querySelectorAll('video');
+// 조건부 렌더링 - 모바일에서는 비디오 섹션 완전 제거
+function conditionalRenderContent() {
+    const videoSections = document.querySelectorAll('.hero.teaser');
+    const mobileMessage = document.querySelector('.mobile-message');
     
     if (isMobileDevice()) {
-        // 모바일에서는 모든 비디오 일시정지 및 자동재생 비활성화
+        // 모바일: 비디오 섹션들 완전 제거, 모바일 메시지 표시
+        videoSections.forEach(section => {
+            if (section.style.display !== 'none') {
+                section.style.display = 'none';
+                section.setAttribute('data-hidden-mobile', 'true');
+            }
+        });
+        
+        if (mobileMessage) {
+            mobileMessage.style.display = 'flex';
+        }
+        
+        // 모든 비디오 요소 제거
+        const videos = document.querySelectorAll('video');
         videos.forEach(video => {
             video.pause();
-            video.removeAttribute('autoplay');
-            video.autoplay = false;
-            video.muted = true; // 모바일에서 소리도 음소거
+            video.src = ''; // 소스 제거로 완전 정지
+            video.load(); // 리로드하여 완전 초기화
         });
+        
     } else {
-        // 데스크톱에서는 자동재생 활성화
-        videos.forEach(video => {
+        // 데스크톱: 비디오 섹션들 표시, 모바일 메시지 숨김
+        videoSections.forEach(section => {
+            if (section.getAttribute('data-hidden-mobile') === 'true') {
+                section.style.display = '';
+                section.removeAttribute('data-hidden-mobile');
+            }
+        });
+        
+        if (mobileMessage) {
+            mobileMessage.style.display = 'none';
+        }
+        
+        // 비디오 소스 복원 및 자동재생 시작
+        setTimeout(() => {
+            restoreVideoSources();
+        }, 100);
+    }
+}
+
+// 비디오 소스 복원 함수
+function restoreVideoSources() {
+    const videos = document.querySelectorAll('video');
+    videos.forEach((video, index) => {
+        if (!video.src || video.src === '') {
+            // 원본 소스 복원 (0_0.mp4, 0_1.mp4, 1_0.mp4, 1_1.mp4 등의 패턴)
+            const sources = video.querySelectorAll('source');
+            sources.forEach(source => {
+                if (source.src && !video.src) {
+                    video.src = source.src;
+                }
+            });
+            
+            // 자동재생 속성 복원
             video.setAttribute('autoplay', '');
+            video.setAttribute('muted', '');
+            video.setAttribute('loop', '');
             video.autoplay = true;
             video.muted = true;
+            video.loop = true;
+            
+            // 재생 시작
+            video.load();
             video.play().catch(e => {
-                // 자동재생이 실패해도 에러 무시
                 console.log('Video autoplay failed:', e);
             });
-        });
-    }
+        }
+    });
 }
 
 $(document).ready(function() {
@@ -47,22 +98,12 @@ $(document).ready(function() {
 	
     bulmaSlider.attach();
 
-    // 페이지 로드 시 비디오 제어
-    controlVideosForMobile();
+    // 페이지 로드 시 조건부 렌더링
+    conditionalRenderContent();
     
-    // 화면 크기 변경 시 비디오 제어
+    // 화면 크기 변경 시 조건부 렌더링
     window.addEventListener('resize', function() {
-        setTimeout(controlVideosForMobile, 100);
-    });
-    
-    // 페이지 가시성 변경 시에도 제어 (탭 전환 등)
-    document.addEventListener('visibilitychange', function() {
-        if (document.hidden && isMobileDevice()) {
-            // 모바일에서 탭이 숨겨지면 모든 비디오 정지
-            document.querySelectorAll('video').forEach(video => {
-                video.pause();
-            });
-        }
+        setTimeout(conditionalRenderContent, 100);
     });
 
 })
