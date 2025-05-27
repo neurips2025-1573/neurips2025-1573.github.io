@@ -50,6 +50,20 @@ body {
   .footer {
     display: none !important;
   }
+  
+  /* 모바일에서 모든 비디오 완전히 숨기기 및 비활성화 */
+  video {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+  
+  /* 모바일에서 비디오 컨테이너도 숨기기 */
+  .columns,
+  .column {
+    display: none !important;
+  }
 }
 
 .footer .icon-link {
@@ -225,6 +239,4 @@ video {
     background-color: rgba(0, 0, 0, 0.8);
   }
 }
-
-
 
