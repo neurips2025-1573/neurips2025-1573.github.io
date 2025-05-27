@@ -1,8 +1,26 @@
 window.HELP_IMPROVE_VIDEOJS = false;
 
+// 현재 디바이스 상태 추적
+let currentDeviceType = null; // 'mobile' 또는 'desktop'
+
 // 모바일 디바이스 감지
 function isMobileDevice() {
     return window.innerWidth <= 768;
+}
+
+// 디바이스 타입 가져오기
+function getDeviceType() {
+    return isMobileDevice() ? 'mobile' : 'desktop';
+}
+
+// 디바이스 타입이 실제로 변경되었는지 확인
+function hasDeviceTypeChanged() {
+    const newDeviceType = getDeviceType();
+    if (currentDeviceType !== newDeviceType) {
+        currentDeviceType = newDeviceType;
+        return true;
+    }
+    return false;
 }
 
 // 조건부 렌더링 - 모바일에서는 비디오 섹션 완전 제거
@@ -81,6 +99,19 @@ function restoreVideoSources() {
     });
 }
 
+// 디바운스 함수 (추가 최적화)
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
 $(document).ready(function() {
     // Check for click events on the navbar burger icon
 
@@ -98,12 +129,18 @@ $(document).ready(function() {
 	
     bulmaSlider.attach();
 
-    // 페이지 로드 시 조건부 렌더링
+    // 페이지 로드 시 초기 디바이스 타입 설정 및 조건부 렌더링
+    currentDeviceType = getDeviceType();
     conditionalRenderContent();
     
-    // 화면 크기 변경 시 조건부 렌더링
-    window.addEventListener('resize', function() {
-        setTimeout(conditionalRenderContent, 100);
-    });
+    // 최적화된 resize 이벤트 핸들러 - 디바이스 타입이 실제로 변경될 때만 실행
+    const optimizedResizeHandler = debounce(() => {
+        if (hasDeviceTypeChanged()) {
+            console.log(`Device type changed to: ${currentDeviceType}`);
+            conditionalRenderContent();
+        }
+    }, 150); // 150ms 디바운스
+    
+    window.addEventListener('resize', optimizedResizeHandler);
 
 })
