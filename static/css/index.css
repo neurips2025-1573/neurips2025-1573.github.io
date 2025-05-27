@@ -2,6 +2,55 @@ body {
   font-family: 'Noto Sans', sans-serif;
 }
 
+/* 모바일 전용 메시지 스타일 */
+.mobile-message {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background-color: #f5f5f5;
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+.mobile-message-content {
+  max-width: 400px;
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.mobile-message h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.mobile-message p {
+  font-size: 1rem;
+  color: #666;
+  line-height: 1.5;
+}
+
+/* 모바일에서 메인 콘텐츠 숨기기 및 메시지 표시 */
+@media screen and (max-width: 768px) {
+  .mobile-message {
+    display: flex !important;
+  }
+  
+  .hero,
+  .section,
+  .footer {
+    display: none !important;
+  }
+}
 
 .footer .icon-link {
     font-size: 25px;
@@ -131,6 +180,50 @@ body {
 
 .eql-cntrb { 
   font-size: smaller;
+}
+
+/* 모바일에서 동영상 팝업 방지 */
+video {
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+  /* 모든 디바이스에서 인라인 재생 강제 */
+  -webkit-playsinline: true;
+  -moz-playsinline: true;
+  playsinline: true;
+}
+
+/* 모바일 디바이스에서 동영상 인라인 재생 강제 */
+@media screen and (max-width: 768px) {
+  video {
+    width: 100% !important;
+    height: auto !important;
+    display: block;
+    margin: 0 auto;
+    /* iOS Safari에서 전체화면 방지 */
+    -webkit-playsinline: true !important;
+    playsinline: true !important;
+  }
+  
+  /* 동영상 컨테이너 스타일 조정 */
+  .column video {
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  
+  /* 모바일에서 동영상 제목 폰트 크기 조정 */
+  .subtitle {
+    font-size: 1.2rem !important;
+  }
+  
+  /* 모바일에서 동영상 컨트롤 스타일 개선 */
+  video::-webkit-media-controls {
+    display: flex !important;
+  }
+  
+  video::-webkit-media-controls-panel {
+    background-color: rgba(0, 0, 0, 0.8);
+  }
 }
 
 
